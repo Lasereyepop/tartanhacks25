@@ -11,9 +11,9 @@ export default function App({ Component, pageProps }) {
   return (
     <ChakraProvider theme={customTheme}>
       <Head>
-        <title>Title</title> {/* Set the title here */}
+        <title>Syllabridge</title> {/* Set the title here */}
         {/* Add the favicon here */}
-        <link rel="icon" href="/images/logo.png" type="image/png" height={1} width={5}/>
+        <link rel="icon" href="/logo.jpeg" type="image/jpeg" height={1} width={5}/>
       </Head>
       <main className={inter.className}>
         <Component {...pageProps} />

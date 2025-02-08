@@ -1,6 +1,6 @@
-Project for app
+Project for Tartanhacks'25
 
-To use, copy the files over
+To run the frontend,
 Then run ```npm install next react react-dom```
 Then run ```npm audit fix```
 Then run ```npm run build```
