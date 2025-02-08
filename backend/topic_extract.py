@@ -18,7 +18,7 @@ class topic_extractor:
 
     def query(self):
         print(self.text)
-        prompt = f"you are a highly intelligent bot capable of extracting keywords from convoluted files. More specifically, it will be extracted text from a syllabus. You will respond ONLY with an array of strings of key class topics you discover. DO NOT respond with any other dialouge. ONLY respond with an correctly formatted array of key topics seperated by commas ONLY: {self.text}" 
+        prompt = f"you are a highly intelligent bot capable of extracting keywords from convoluted files. More specifically, it will be extracted text from a syllabus. You will respond ONLY with an array of strings of key class topics you discover, with a maximum of the AT MOST 10 MOST IMPORTANT. DO NOT respond with any other dialouge. ONLY respond with an correctly formatted array of key topics seperated by commas ONLY, DO NOT INCLUDE MORE THAN 10. DO NOT INCLUDE OVERLY GENERAL TOPICS, LIKE 'COMPUTER SCIENCE' OR 'GAME DEVELOPMENT' THEY SHOULD BE SPECIFIC CS TOPICS: {self.text}" 
         completion = self.client.chat.completions.create(
             extra_headers={
                 "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
