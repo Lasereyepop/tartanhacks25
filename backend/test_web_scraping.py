@@ -92,7 +92,7 @@ def scrape_syllabus(url, keywords=None):
         return None
 
 # Example usage
-url = "https://www.cs.princeton.edu/courses/archive/spring25/cos226/lectures.php"
+url = "https://www.cs.cmu.edu/~112/schedule.html"
 schedule = scrape_syllabus(url)
 if schedule:
     for entry in schedule:

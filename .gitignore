@@ -1,2 +1,8 @@
 node_modules
 .next/
+tartanhacks-25/
+.venv/
+env/
+.env/
+venv/
+*.env
