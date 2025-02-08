@@ -45,6 +45,28 @@ class SyllabusResponse(BaseModel):
     link_2: str
     university_2: str
 
+class ClassComparisonResponse(BaseModel):
+    topic_1: str
+    topic_2: str
+    topic_3: str
+
+@app.post("/compare-classes", response_model=ClassComparisonResponse)
+async def compare_classes(class_1, class_2, class_1_university, class_2_university):
+    s_s = search_syllabus(SYLLABUS_NAME)
+    t_r = s_s.compare_classes(class_1, class_2, class_1_university, class_2_university)
+    if t_r is None:
+        return ClassComparisonResponse(
+            topic_1="",
+            topic_2="",
+            topic_3=""
+        )
+    else:
+        return ClassComparisonResponse(
+            topic_1=t_r['topic_1'],
+            topic_2=t_r['topic_2'],
+            topic_3=t_r['topic_3']
+        )
+
 @app.post("/upload-course-information", response_model=SyllabusResponse)
 async def upload_course_information(user_university, user_course_number, user_course_name, user_target_uni):
     s_s = search_syllabus(SYLLABUS_NAME)

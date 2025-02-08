@@ -26,8 +26,7 @@ class search_syllabus:
         payload_string = json.dumps(payload)
 
         p = prompt + "payload: " + payload_string
-
-        
+   
         completion = self.client.chat.completions.create(
             extra_headers={
                 "HTTP-Referer": "<>",
@@ -48,9 +47,44 @@ class search_syllabus:
             
             
             return json.loads(result)
-            
-
+        
         except:
             print("error")
 
+    def compare_classes(self, class_one, class_two, class_one_university, class_two_university):
+        payload = {
+            "class_one": class_one,
+            "class_two": class_two,
+            "class_one_university": class_one_university,
+            "class_two_university": class_two_university
+        }
+        payload_string = json.dumps(payload)
+        prompt = "give an array of three specific projects to do that emphasizes what's lacking in class two, from class two to class one. Give the format exactly like this: {\"topic_1\": topic_1, \"topic_2\": topic_2, \"topic_3\": topic_3}. You may only respond in this manner, or return NULL. No other output is accpeted."
+
+        prompt = prompt + "payload: " + payload_string
         
+        completion = self.client.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "<>",
+                "X-Title": "<>",
+            },
+            max_tokens = 500,
+            model = self.model_name,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ]
+        )
+        try:
+            result=completion.choices[0].message.content
+
+            
+            
+            return json.loads(result)
+        
+        except:
+            print("error")
+
+
