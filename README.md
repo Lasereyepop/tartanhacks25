@@ -1,4 +1,4 @@
-##Syllabridge
+## Syllabridge
 
 #### An AI - Powered Web App that helps students extract essential concepts from syllabi and identify appropriate learning materials.
 
