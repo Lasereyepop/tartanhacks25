@@ -17,21 +17,29 @@ class supplement_engine:
             }
 
             response = requests.get(url, headers=headers)
-
+            t_r = []
             if response.status_code == 200:
                 data = response.json()  # Parse the response as JSON
                 # Extract titles and URLs
                 results = data.get('web', {}).get('results', [])
+                print(results)
                 for result in results:
-                    title = result.get('title')
-                    url = result.get('url')
-                    description = result.get('description')
-                    age = result.get('page_age')
-                    print(f"Title: {title}\nURL: {url}\n Description:{description}\n Age:{age}\n")
-                    return (f"Title: {title}\nURL: {url}\n Description:{description}\n Age:{age}\n")
+
+                    print("RESULT", result)
+                    url = result
+
+                    # title = result.get('title')
+                    # url = result.get('url')
+                    # description = result.get('description')
+                    # age = result.get('page_age')
+                    # print(f"Title: {title}\nURL: {url}\n Description:{description}\n Age:{age}\n")
+                    t_r.append(f"URL: {url}\n ")
+                    
             else:
                 print("Error TOPIC: ", topic)
                 print(f"Error: {response.status_code}")
+            
+            return t_r
 
     def query_video(self, topic):
         url = f"https://api.search.brave.com/res/v1/videos/search?q={topic}&freshness=py"

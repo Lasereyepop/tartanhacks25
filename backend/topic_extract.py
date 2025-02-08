@@ -6,7 +6,8 @@ import os
 load_dotenv()
 
 # MODEL_NAME = "deepseek/deepseek-r1-distill-llama-70b:free"
-MODEL_NAME= "google/gemma-2-9b-it:free"
+# MODEL_NAME= "google/gemma-2-9b-it:free"
+MODEL_NAME = "google/gemini-2.0-flash-001"
 class topic_extractor:
     def __init__(self, text):
         self.client = OpenAI(
@@ -18,7 +19,7 @@ class topic_extractor:
 
     def query(self):
         print(self.text)
-        prompt = f"you are a highly intelligent bot capable of extracting keywords from convoluted files. More specifically, it will be extracted text from a syllabus. You will respond ONLY with an array of strings of key class topics you discover, with a maximum of the AT MOST 10 MOST IMPORTANT. DO NOT respond with any other dialouge. ONLY respond with an correctly formatted array of key topics seperated by commas ONLY, DO NOT INCLUDE MORE THAN 10. DO NOT INCLUDE OVERLY GENERAL TOPICS, LIKE 'COMPUTER SCIENCE' OR 'GAME DEVELOPMENT' THEY SHOULD BE SPECIFIC CS TOPICS: {self.text}" 
+        prompt = f"You are an advanced AI designed to extract specific keywords and key class topics from syllabus documents. Your task is to extract up to 10 of the most relevant and specific computer science topics that are mentioned in the syllabus. You should focus on concrete technical concepts, methods, or frameworks, avoiding broad, general topics like \"computer science\" or \"game development.\" Respond with a formatted array of strings containing the 10 most important class topics you identify. The array should be separated by commas and should not include more than 10 topics. Do not include any additional dialogue, and ensure the format is strictly adhered to: [ \"Topic 1\", \"Topic 2\", \"Topic 3\", ..., \"Topic 10\" ]: {self.text}"
         completion = self.client.chat.completions.create(
             extra_headers={
                 "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.

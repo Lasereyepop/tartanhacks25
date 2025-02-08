@@ -1,3 +1,4 @@
+from time import sleep
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -9,7 +10,7 @@ from pdf_extraction import pdf_extractor  # Import your custom PDF extraction cl
 from supplement_engine import *
 from ranking_engine import ranking_engine
 
-MODEL_NAME="google/gemma-2-9b-it:free"
+MODEL_NAME="openai/gpt-4o-mini"
 app = FastAPI()
 
 app.add_middleware(
@@ -57,6 +58,8 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     for topic in extracted_topics[:10]:
         if isinstance(topic, str):
+            links =get_links(topic, s_l, r_l)
+            sleep(2)
             video_responses = s_l.query_video(topic)
             video_links = [
                 VideoLink(
@@ -71,7 +74,7 @@ async def upload_pdf(file: UploadFile = File(...)):
             response.append(
                 LinksResponse(
                     topic=topic,
-                    links=get_links(topic, s_l, r_l),
+                    links=links,
                     video_links=video_links
                 )
             )
@@ -82,8 +85,10 @@ def get_links(topic, supplement_engine, ranking_engine):
     print("got here")
     s_l = supplement_engine
     r_l = ranking_engine
-
+    sleep(1)
     web_results = s_l.query_web(topic)
+    sleep(1)
     ranked_links = r_l.return_links(web_results)
+    
 
     return ranked_links
