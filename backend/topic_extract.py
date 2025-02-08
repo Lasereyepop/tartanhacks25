@@ -5,7 +5,8 @@ import os
 
 load_dotenv()
 
-MODEL_NAME = "deepseek/deepseek-r1-distill-llama-70b:free"
+# MODEL_NAME = "deepseek/deepseek-r1-distill-llama-70b:free"
+MODEL_NAME= "google/gemma-2-9b-it:free"
 class topic_extractor:
     def __init__(self, text):
         self.client = OpenAI(
@@ -16,6 +17,7 @@ class topic_extractor:
         self.text = text
 
     def query(self):
+        print(self.text)
         prompt = f"you are a highly intelligent bot capable of extracting keywords from convoluted files. More specifically, it will be extracted text from a syllabus. You will respond ONLY with an array of strings of key class topics you discover. DO NOT respond with any other dialouge. ONLY respond with an correctly formatted array of key topics seperated by commas ONLY: {self.text}" 
         completion = self.client.chat.completions.create(
             extra_headers={
@@ -27,7 +29,7 @@ class topic_extractor:
             messages=[
                 {
                 "role": "user",
-                "content": prompt,\
+                "content": prompt,
                 }
             ]
         )
@@ -54,10 +56,10 @@ class topic_extractor:
 
             #topics = json.loads(result)
            #if isinstance(topics, list):
-            return result
-        except:
-            print(f"Error generating output: {completion.error['metadata']['raw']}")
-            return None
+        except Exception as e:
+    # Catch general errors and print detailed information
+            print("An error occurred:", str(e))
+    
         
 
 # topic_extractor = topic_extractor()
