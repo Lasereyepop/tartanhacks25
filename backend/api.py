@@ -10,8 +10,10 @@ from pdf_extraction import pdf_extractor  # Import your custom PDF extraction cl
 from supplement_engine import *
 from ranking_engine import ranking_engine
 from test_web_scraping import web_scraper
+from search_syllabus import search_syllabus
 
 MODEL_NAME="openai/gpt-4o-mini"
+SYLLABUS_NAME="anthropic/claude-3.5-haiku"
 app = FastAPI()
 
 app.add_middleware(
@@ -33,6 +35,35 @@ class LinksResponse(BaseModel):
     topic: str
     links: List[str]
     video_links: Optional[List[VideoLink]] = None
+
+
+class SyllabusResponse(BaseModel):
+    course: str
+    link: str
+    university: str
+    course_2: str
+    link_2: str
+    university_2: str
+
+@app.post("/upload-course-information", response_model=SyllabusResponse)
+async def upload_course_information(user_university, user_course_number, user_course_name, user_target_uni):
+    s_s = search_syllabus(SYLLABUS_NAME)
+    t_r = s_s.search_for_syllabus(user_university, user_course_number, user_course_name, user_target_uni)
+    if t_r is None:
+        return SyllabusResponse(
+            course="",
+            link="",
+            university=""
+        )
+    else:
+        return SyllabusResponse(
+            course=t_r['course'],
+            link=t_r['link'],
+            university=t_r['university'],
+            course_2=t_r['course_2'],
+            link_2=t_r['link_2'],
+            university_2=t_r['university_2']
+        )
 
 @app.post("/upload-url", response_model=List[LinksResponse])
 async def upload_url(url: str):
@@ -86,9 +117,8 @@ async def upload_pdf(file: UploadFile = File(...)):
     
     # Use your existing pdf_extract class to extract text from the PDF
     extractor = pdf_extractor(io.BytesIO(file_bytes))  # Instantiate your PDF extraction class
-    print(file.filename)
+   
     pdf_text = extractor.extract_pdf()  # Assuming extract_pdf is an async method
-    print(pdf_text)
 
     processed_pdf = pdf_text.split("\n")
     # Process the extracted text (pass it to your topic_extractor or do any processing)
@@ -129,7 +159,7 @@ async def upload_pdf(file: UploadFile = File(...)):
     return response
 
 def get_links(topic, supplement_engine, ranking_engine):
-    print("got here")
+   
     s_l = supplement_engine
     r_l = ranking_engine
     sleep(1)

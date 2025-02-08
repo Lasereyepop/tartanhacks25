@@ -33,7 +33,6 @@ class ranking_engine:
         )
         try:
             result=completion.choices[0].message.content
-            print("LIST RANK RESULT: ", result)
             lines = result.strip().split(",")
 
             returns= [line.strip() for line in lines if line.strip()]

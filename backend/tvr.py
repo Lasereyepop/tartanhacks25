@@ -26,12 +26,11 @@ def extract_topics():
   
 
         with open("output.json", "r") as file:
-            print(file)
             data = json.load(file)
         
         json_string = json.dumps(data)
 
-        print(json_string)
+       
         
         topic_model = BERTopic(language="english")
         topics, _ = topic_model.fit_transform([json_string])

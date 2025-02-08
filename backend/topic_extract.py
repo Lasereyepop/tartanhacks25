@@ -18,7 +18,6 @@ class topic_extractor:
         self.text = text
 
     def query(self):
-        print(self.text)
         prompt = f"You are an advanced AI designed to extract specific keywords and key class topics from syllabus documents. Your task is to extract up to 10 of the most relevant and specific computer science topics that are mentioned in the syllabus. You should focus on concrete technical concepts, methods, or frameworks, avoiding broad, general topics like \"computer science\" or \"game development.\" Respond with a formatted array of strings containing the 10 most important class topics you identify. The array should be separated by commas and should not include more than 10 topics. Do not include any additional dialogue, and ensure the format is strictly adhered to: [ \"Topic 1\", \"Topic 2\", \"Topic 3\", ..., \"Topic 10\" ]: {self.text}"
         completion = self.client.chat.completions.create(
             extra_headers={
