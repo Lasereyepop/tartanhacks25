@@ -9,6 +9,7 @@ from topic_extract import topic_extractor  # Assuming you have the topic_extract
 from pdf_extraction import pdf_extractor  # Import your custom PDF extraction class
 from supplement_engine import *
 from ranking_engine import ranking_engine
+from test_web_scraping import web_scraper
 
 MODEL_NAME="openai/gpt-4o-mini"
 app = FastAPI()
@@ -32,6 +33,52 @@ class LinksResponse(BaseModel):
     topic: str
     links: List[str]
     video_links: Optional[List[VideoLink]] = None
+
+@app.post("/upload-url", response_model=List[LinksResponse])
+async def upload_url(url: str):
+    w_s = web_scraper(url)
+
+    result = w_s.scrape_syllabus()
+
+    extractor = topic_extractor(result)
+    extracted_topics = extractor.query()  # Assuming query() uses the extracted PDF text for processing
+
+    if not extracted_topics:
+        return []
+    
+    s_l = supplement_engine()
+    r_l = ranking_engine(MODEL_NAME)
+
+    response = []
+
+    for topic in extracted_topics[:10]:
+        if isinstance(topic, str):
+            links =get_links(topic, s_l, r_l)
+            sleep(2)
+            video_responses = s_l.query_video(topic)
+            video_links = [
+                VideoLink(
+                    title=video['title'],
+                    description=video['description'],
+                    views=video['views'],
+                    url=video['url'],
+                    thumbnail=video['thumbnail']
+                )
+                for video in video_responses
+            ]
+            response.append(
+                LinksResponse(
+                    topic=topic,
+                    links=links,
+                    video_links=video_links
+                )
+            )
+    
+    return response
+
+
+    
+
 
 @app.post("/upload-pdf", response_model=List[LinksResponse])
 async def upload_pdf(file: UploadFile = File(...)):
