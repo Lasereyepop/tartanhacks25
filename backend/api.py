@@ -1,19 +1,27 @@
 from fastapi import FastAPI, File, UploadFile
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 import json
 import io
 from topic_extract import topic_extractor  # Assuming you have the topic_extractor class from your code
 from pdf_extraction import pdf_extractor  # Import your custom PDF extraction class
-from supplement_engine import supplement_engine
+from supplement_engine import *
 from ranking_engine import ranking_engine
 
 MODEL_NAME="google/gemma-2-9b-it:free"
 app = FastAPI()
 
+class VideoLink(BaseModel):
+    title: str
+    url: str
+    description: str
+    views: int
+    thumbnail: str
+
 class LinksResponse(BaseModel):
     topic: str
     links: List[str]
+    video_links: Optional[List[VideoLink]] = None
 
 @app.post("/upload-pdf", response_model=List[LinksResponse])
 async def upload_pdf(file: UploadFile = File(...)):
@@ -35,15 +43,47 @@ async def upload_pdf(file: UploadFile = File(...)):
     
     s_l = supplement_engine()
     r_l = ranking_engine(MODEL_NAME)
+
     
-    
-    response = [
-        LinksResponse(
-            topic=topic,
-            links=get_links(topic, s_l, r_l)
-        )
-        for topic in extracted_topics[:10] if isinstance(topic, str)  # Ensure topic is a valid string
-    ]
+    # response = [
+    #     LinksResponse(
+    #         topic=topic,
+    #         links=get_links(topic, s_l, r_l),
+    #         video_links=[
+    #         VideoLink(
+    #             title=video['title'],
+    #             url=video['url'],
+    #             thumbnail=video['thumbnail']
+    #         )
+    #         for video in s_l.query_video(topic)
+    #         ]
+    #     )
+    #     for topic in extracted_topics[:10] if isinstance(topic, str)  # Ensure topic is a valid string
+    # ]
+
+    response = []
+
+    for topic in extracted_topics[:10]:
+        if isinstance(topic,str):
+            video_responses = s_l.query_video(topic)
+            video_links = [
+                VideoLink(
+                    title=video['title'],
+                    description=video['description'],
+                    views=video['views'],
+                    url=video['url'],
+                    thumbnail=video['thumbnail']
+                )
+            for video in video_responses
+        ]
+            response.append(
+            LinksResponse(
+                topic=topic,
+                links=get_links(topic, s_l, r_l),
+                video_links=video_links
+
+            )
+            )
 
     
     return response
