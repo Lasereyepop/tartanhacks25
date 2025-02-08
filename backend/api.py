@@ -1,4 +1,5 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import json
@@ -10,6 +11,14 @@ from ranking_engine import ranking_engine
 
 MODEL_NAME="google/gemma-2-9b-it:free"
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class VideoLink(BaseModel):
     title: str
@@ -44,27 +53,10 @@ async def upload_pdf(file: UploadFile = File(...)):
     s_l = supplement_engine()
     r_l = ranking_engine(MODEL_NAME)
 
-    
-    # response = [
-    #     LinksResponse(
-    #         topic=topic,
-    #         links=get_links(topic, s_l, r_l),
-    #         video_links=[
-    #         VideoLink(
-    #             title=video['title'],
-    #             url=video['url'],
-    #             thumbnail=video['thumbnail']
-    #         )
-    #         for video in s_l.query_video(topic)
-    #         ]
-    #     )
-    #     for topic in extracted_topics[:10] if isinstance(topic, str)  # Ensure topic is a valid string
-    # ]
-
     response = []
 
     for topic in extracted_topics[:10]:
-        if isinstance(topic,str):
+        if isinstance(topic, str):
             video_responses = s_l.query_video(topic)
             video_links = [
                 VideoLink(
@@ -74,32 +66,17 @@ async def upload_pdf(file: UploadFile = File(...)):
                     url=video['url'],
                     thumbnail=video['thumbnail']
                 )
-            for video in video_responses
-        ]
+                for video in video_responses
+            ]
             response.append(
-            LinksResponse(
-                topic=topic,
-                links=get_links(topic, s_l, r_l),
-                video_links=video_links
-
+                LinksResponse(
+                    topic=topic,
+                    links=get_links(topic, s_l, r_l),
+                    video_links=video_links
+                )
             )
-            )
-
     
     return response
-    # Convert extracted topics to a list if necessary
-    # topics = json.loads(extracted_topics)
-
-    # # Generate links for each topic
-    # response = []
-    # for topic in topics:
-    #     links = [f"https://example.com/{topic.replace(' ', '-')}", 
-    #              f"https://example.com/resources/{topic.replace(' ', '-')}", 
-    #              f"https://example.com/{topic.replace(' ', '-')}-guide"]
-    #     response.append(LinksResponse(topic=topic, links=links))
-
-    # return response
-
 
 def get_links(topic, supplement_engine, ranking_engine):
     print("got here")
@@ -110,5 +87,3 @@ def get_links(topic, supplement_engine, ranking_engine):
     ranked_links = r_l.return_links(web_results)
 
     return ranked_links
-
-    
