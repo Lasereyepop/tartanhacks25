@@ -11,6 +11,7 @@ from supplement_engine import *
 from ranking_engine import ranking_engine
 from test_web_scraping import web_scraper
 from search_syllabus import search_syllabus
+from career_advice import SyllabusAnalyzer
 
 MODEL_NAME="openai/gpt-4o-mini"
 SYLLABUS_NAME="anthropic/claude-3.5-haiku"
@@ -49,6 +50,23 @@ class ClassComparisonResponse(BaseModel):
     topic_1: str
     topic_2: str
     topic_3: str
+
+class CareerAdviceResponse(BaseModel):
+    response: str
+
+@app.post("/career-advice", response_model=CareerAdviceResponse)
+async def career_advice(user_syllabus, top_syllabi, career):
+    c_r = SyllabusAnalyzer(json.loads(user_syllabus), json.loads(top_syllabi))
+    result = c_r.analyze(career)
+    if result is None:
+        return CareerAdviceResponse(
+            response=""
+        )
+    else:
+        return CareerAdviceResponse(
+            response=result
+        )
+
 
 @app.post("/compare-classes", response_model=ClassComparisonResponse)
 async def compare_classes(class_1, class_2, class_1_university, class_2_university):
