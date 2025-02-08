@@ -22,10 +22,10 @@ class supplement_engine:
                 data = response.json()  # Parse the response as JSON
                 # Extract titles and URLs
                 results = data.get('web', {}).get('results', [])
-                print(results)
+               
                 for result in results:
 
-                    print("RESULT", result)
+                 
                     url = result
 
                     # title = result.get('title')
@@ -52,7 +52,7 @@ class supplement_engine:
 
         if response.status_code == 200:
             data = response.json()
-            print(data)
+         
 
             results = data.get('results', [])
             results_tr = []
@@ -75,8 +75,7 @@ class supplement_engine:
             sorted_results = sorted(results_tr, key=lambda x: x["views"], reverse=True)
             return sorted_results
             top_views = top_views = [f'"url": {item.get("url","")}, "title": {item.get("title", "")}, "thumbnail": {item.get("thumbnail", "")}' for item in sorted_results][:5]
-            print(top_views)
-            top_views = ' '.join(top_views)
+         
 
             
         else:
