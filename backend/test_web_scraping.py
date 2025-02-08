@@ -1,3 +1,4 @@
+import json
 import requests
 import re
 from bs4 import BeautifulSoup
@@ -76,6 +77,10 @@ def scrape_syllabus(url, keywords=None):
                     if content:
                         schedule.extend(content)
                     break
+        with open("syllabus_schedule.json", "w") as json_file:
+            json.dump(schedule, json_file, indent=4)
+
+        return schedule
 
         return schedule
 
