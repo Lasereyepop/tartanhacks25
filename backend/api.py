@@ -42,7 +42,7 @@ async def upload_pdf(file: UploadFile = File(...)):
             topic=topic,
             links=get_links(topic, s_l, r_l)
         )
-        for topic in extracted_topics[:5] if isinstance(topic, str)  # Ensure topic is a valid string
+        for topic in extracted_topics[:10] if isinstance(topic, str)  # Ensure topic is a valid string
     ]
 
     
