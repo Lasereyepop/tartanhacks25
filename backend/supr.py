@@ -4,10 +4,13 @@ from googlesearch import search
 from numpy import dot
 from numpy.linalg import norm
 import logging
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Set your OpenAI API key
 OPENAI_API_KEY = "your-api-key"
-openai.api_key = OPENAI_API_KEY
+openai.api_key = os.getenv("OPEN_AI_API_KEY")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

@@ -5,7 +5,10 @@ import json
 import io
 from topic_extract import topic_extractor  # Assuming you have the topic_extractor class from your code
 from pdf_extraction import pdf_extractor  # Import your custom PDF extraction class
+from supplement_engine import supplement_engine
+from ranking_engine import ranking_engine
 
+MODEL_NAME="google/gemma-2-9b-it:free"
 app = FastAPI()
 
 class LinksResponse(BaseModel):
@@ -30,17 +33,16 @@ async def upload_pdf(file: UploadFile = File(...)):
     if not extracted_topics:
         return []
     
+    s_l = supplement_engine()
+    r_l = ranking_engine(MODEL_NAME)
+    
     
     response = [
         LinksResponse(
             topic=topic,
-            links=[
-                f"https://example.com/{topic.replace(' ', '-')}",
-                f"https://example.com/resources/{topic.replace(' ', '-')}",
-                f"https://example.com/{topic.replace(' ', '-')}-guide"
-            ]
+            links=get_links(topic, s_l, r_l)
         )
-        for topic in extracted_topics if isinstance(topic, str)  # Ensure topic is a valid string
+        for topic in extracted_topics[:5] if isinstance(topic, str)  # Ensure topic is a valid string
     ]
 
     
@@ -57,3 +59,16 @@ async def upload_pdf(file: UploadFile = File(...)):
     #     response.append(LinksResponse(topic=topic, links=links))
 
     # return response
+
+
+def get_links(topic, supplement_engine, ranking_engine):
+    print("got here")
+    s_l = supplement_engine
+    r_l = ranking_engine
+
+    web_results = s_l.query_web(topic)
+    ranked_links = r_l.return_links(web_results)
+
+    return ranked_links
+
+    
